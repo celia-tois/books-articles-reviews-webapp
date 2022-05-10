@@ -26,4 +26,5 @@ urlpatterns = [
     path('signup/', authentication.views.signup, name='signup'),
     path('logout/', LogoutView.as_view(next_page='login'), name='logout'),
     path('home/', app.views.home, name='home'),
+    path('follow-users/', app.views.follow_users, name='follow_users'),
 ]
