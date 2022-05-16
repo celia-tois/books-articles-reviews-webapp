@@ -15,9 +15,9 @@ def flux(request):
         user = User.objects.get(username=subscription.followed_user)
         users_to_display.append(user)
     tickets = models.Ticket.objects.filter(user=users_to_display[0])
-    print(tickets)
-    return render(request, 'app/flux.html', context={'tickets': tickets, 'user_logged_in': user_logged_in})
-
+    reviews = models.Review.objects.filter(user=users_to_display[0])
+    print(reviews)
+    return render(request, 'app/flux.html', context={'tickets': tickets, 'reviews': reviews, 'user_logged_in': user_logged_in})
 
 @login_required
 def follow_users(request):
@@ -68,5 +68,16 @@ def create_ticket(request):
 
 
 @login_required
-def create_review(request):
-    return render(request, 'app/create_review.html')
+def create_review(request, id):
+    user_logged_in = User.objects.get(username=request.user)
+    ticket = models.Ticket.objects.get(id=id)
+    form = forms.ReviewForm()
+    if request.method == 'POST':
+        form = forms.ReviewForm(request.POST, request.FILES)
+        if form.is_valid():
+            review = form.save(commit=False)
+            review.user = request.user
+            review.ticket = ticket
+            review.save()
+            return redirect('flux')
+    return render(request, 'app/create_review.html', context={'form': form, 'ticket': ticket, 'user_logged_in': user_logged_in})

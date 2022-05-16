@@ -31,7 +31,7 @@ urlpatterns = [
     path('subscriptions/', app.views.follow_users, name='subscriptions'),
     path('subscriptions/<int:id>/unfollow/', app.views.unfollow_user, name='unfollow_user'),
     path('create-ticket/', app.views.create_ticket, name='create_ticket'),
-    path('create-review/', app.views.create_review, name='create_review'),
+    path('<int:id>/create-review/', app.views.create_review, name='create_review'),
 ]
 
 if settings.DEBUG:

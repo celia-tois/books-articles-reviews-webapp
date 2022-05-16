@@ -3,5 +3,51 @@
 {% block content %}
     <div class="row justify-content-center my-5">
         <h5 class="text-center">Créer une critique</h5>
+        <div class="card g-0 col-8 my-3">
+            <p class="mt-2 ms-2 mb-2">Vous êtes en train de poster une réponse à</p>
+            <div class="card-header d-flex justify-content-center">
+                <div class="card mb-3 mt-3" style="max-width: 540px;">
+                    <div class="row g-0">
+                        <div class="col-md-4">
+                            {% if ticket.image.url != null %}
+                                <img src="{{ ticket.image.url }}" class="img-fluid rounded-start" alt="Couverture livre">
+                            {% endif %}
+                        </div>
+                        <div class="col-md-8">
+                            <div class="card-body">
+                                {% if ticket.user == user_logged_in %}
+                                    <p>Vous avez demandé une critique</p>
+                                {% else %}
+                                    <p>{{ ticket.user }} a demandé une critique</p>
+                                {% endif %}
+                                <p class="card-text"><small class="text-muted">{{ ticket.time_created }}</small></p>
+                                <h5 class="card-title">{{ ticket.title }}</h5>
+                                <p class="card-text">{{ ticket.description }}</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="card-body">
+                <div class="my-3">
+                    <form method="post" id="create-ticket" enctype="multipart/form-data">
+                        {% csrf_token %}
+                        <div class="my-3">
+                            <p>Titre</p>
+                            {{ form.headline }}
+                        </div>
+                        <div class="my-3">
+                            <p>Note</p>
+                            {{ form.rating }}
+                        </div>
+                        <div class="my-3">
+                            <p>Commentaire</p>
+                            {{ form.body }}
+                        </div>
+                        <button type="submit" class="btn btn-secondary col-12 my-4">Envoyer</button>
+                    </form>
+                </div>
+            </div>
+        </div>
     </div>
 {% endblock %}
