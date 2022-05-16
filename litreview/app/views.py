@@ -1,4 +1,4 @@
-from django.shortcuts import render, redirect
+from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth import get_user_model
 from django.contrib.auth.decorators import login_required
 from . import forms, models
@@ -18,6 +18,15 @@ def flux(request):
     reviews = models.Review.objects.filter(user=users_to_display[0])
     print(reviews)
     return render(request, 'app/flux.html', context={'tickets': tickets, 'reviews': reviews, 'user_logged_in': user_logged_in})
+
+
+@login_required
+def display_posts(request):
+    user_logged_in = User.objects.get(username=request.user)
+    tickets = models.Ticket.objects.filter(user=user_logged_in)
+    reviews = models.Review.objects.filter(user=user_logged_in)
+    return render(request, 'app/posts.html', context={'tickets': tickets, 'reviews': reviews, 'user_logged_in': user_logged_in})
+
 
 @login_required
 def follow_users(request):
@@ -65,6 +74,27 @@ def create_ticket(request):
             ticket.save()
             return redirect('flux')
     return render(request, 'app/create_ticket.html', context={'form': form})
+
+
+@login_required
+def edit_ticket(request, id):
+    ticket = get_object_or_404(models.Ticket, id=id)
+    form = forms.TicketForm(instance=ticket)
+    if request.method == 'POST':
+        form = forms.TicketForm(request.POST, request.FILES, instance=ticket)
+        if form.is_valid():
+            form.save()
+            return redirect('posts')
+    return render(request, 'app/edit_ticket.html', context={'form': form})
+
+
+@login_required
+def delete_ticket(request, id):
+    ticket = get_object_or_404(models.Ticket, id=id)
+    if request.method == 'POST':
+        ticket.delete()
+        return redirect('posts')
+    return render(request, 'app/delete_ticket.html', context={'ticket': ticket})
 
 
 @login_required

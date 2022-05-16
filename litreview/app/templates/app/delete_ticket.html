@@ -1,0 +1,18 @@
+{% extends 'base.html' %}
+
+{% block content %}
+    <div class="row justify-content-center my-5">
+        <div class="col-6 text-center">
+            <h5>Supprimer votre ticket</h5>
+            <form method="post">
+                {% csrf_token %}
+                {{ form }}
+                <p>Êtes-vous sûr de vouloir supprimer votre ticket <strong>{{ ticket.title }}</strong> ?</p>
+                <button type="button" class="btn btn-light g-col-3">
+                    <a href="{% url 'posts' %}">Retour</a>
+                </button>
+                <button type="submit" class="btn btn-danger">Supprimer</button>
+            </form>
+        </div>
+    </div>
+{% endblock %}
