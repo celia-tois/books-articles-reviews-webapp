@@ -15,7 +15,9 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path
+from django.conf import settings
 from django.contrib.auth.views import LoginView, LogoutView
+from django.conf.urls.static import static
 
 import authentication.views
 import app.views
@@ -25,6 +27,14 @@ urlpatterns = [
     path('', LoginView.as_view(template_name='authentication/login.html', redirect_authenticated_user=True), name='login'),
     path('signup/', authentication.views.signup, name='signup'),
     path('logout/', LogoutView.as_view(next_page='login'), name='logout'),
-    path('home/', app.views.home, name='home'),
-    path('follow-users/', app.views.follow_users, name='follow_users'),
+    path('flux/', app.views.flux, name='flux'),
+    path('subscriptions/', app.views.follow_users, name='subscriptions'),
+    path('subscriptions/<int:id>/unfollow/', app.views.unfollow_user, name='unfollow_user'),
+    path('create-ticket/', app.views.create_ticket, name='create_ticket'),
+    path('create-review/', app.views.create_review, name='create_review'),
 ]
+
+if settings.DEBUG:
+    urlpatterns += static(
+        settings.MEDIA_URL, document_root=settings.MEDIA_ROOT
+    )

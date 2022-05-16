@@ -1,0 +1,44 @@
+{% extends 'base.html' %}
+
+{% block content %}
+    <div class="row justify-content-center my-5">
+        <div class="col-6">
+            <div class="row justify-content-center gap-2 mb-4 g-0" style="max-width: 700px;">
+                <a class="btn btn-secondary col" href="{% url 'create_ticket' %}">
+                    Demander une critique
+                </a>
+                <a class="btn btn-secondary col" href="{% url 'create_review' %}">
+                    Créer une critique
+                </a>
+            </div>
+            {% for ticket in tickets %}
+                <div class="card mb-3" style="max-width: 700px;">
+                    <div class="row g-0">
+                        <div class="col-md-4">
+                            {% if ticket.image.url != null %}
+                                <img src="{{ ticket.image.url }}" class="img-fluid rounded-start" alt="Couverture livre">
+                            {% endif %}
+                        </div>
+                        <div class="col-md-8">
+                          <div class="card-body">
+                            {% if ticket.user == user_logged_in %}
+                                <p>Vous avez demandé une critique</p>
+                            {% else %}
+                                <p>{{ ticket.user }} a demandé une critique</p>
+                            {% endif %}
+                              <p class="card-text">
+                                  <small class="text-muted">{{ ticket.time_created }}</small>
+                              </p>
+                              <h6 class="card-title">{{ ticket.title }}</h6>
+                              <p class="card-text">{{ ticket.description }}</p>
+                          </div>
+                            <div class="d-flex justify-content-center mb-4">
+                                <a href="{% url 'create_review' %}" class="btn btn-outline-dark">Créer une critique</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+    </div>
+{% endblock %}

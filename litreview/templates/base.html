@@ -18,6 +18,9 @@
                 display: flex;
                 flex-direction: column;
            }
+           #create-ticket input, #create-ticket textarea {
+                width: 100%;
+           }
         </style>
     </head>
 
@@ -28,10 +31,10 @@
                 {% if user.is_authenticated %}
                     <ul class="navbar-nav">
                         <li class="nav-item">
-                            <a class="nav-link" href="{% url 'home' %}">Flux</a>
+                            <a class="nav-link" href="{% url 'flux' %}">Flux</a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link" href="{% url 'follow_users' %}">Abonnements</a>
+                            <a class="nav-link" href="{% url 'subscriptions' %}">Abonnements</a>
                         </li>
                         <li class="nav-item">
                             <a class="nav-link" href="{% url 'logout' %}">Se déconnecter</a>
@@ -40,6 +43,10 @@
                 {% endif %}
             </div>
         </nav>
-        {% block content %}{% endblock content %}
+
+
+        <div class="container">
+            {% block content %}{% endblock content %}
+        </div>
     </body>
 </html>

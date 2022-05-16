@@ -1,0 +1,66 @@
+{% extends 'base.html' %}
+
+{% block content %}
+
+    <div class="row justify-content-center my-5">
+        <div class="col-6 text-center">
+            <h5>Suivre d'autres utilisateurs</h5>
+            <form method="post">
+                {% csrf_token %}
+                <div class="fieldWrapper">
+                    <label for="usersList" class="form-label"></label>
+                    <div class="input-group">
+                        <input class="form-control" list="datalistOptions" id="usersList" placeholder="Nom d'utilisateur" name="username">
+                        <button class="btn btn-secondary" type="submit">Envoyer</button>
+                        <datalist id="datalistOptions">
+                            {% for user in users %}
+                                <option value="{{ user }}">
+                            {% endfor %}
+                        </datalist>
+                        <p>{{ field.errors }}</p>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    {% if subscriptions|length > 0 %}
+        <div class="row justify-content-center my-5">
+            <div class="col-6 text-center">
+                <h5>Abonnements</h5>
+                <table class="table table-bordered">
+                    <tbody>
+                        {% for subscription in subscriptions %}
+                            <tr>
+                               <td>{{ subscription }}</td>
+                                {% for user in users %}
+                                    {% if user == subscription %}
+                                        <td class="col-4"><a href="{% url 'unfollow_user' user.id %}">Se désabonner</a></td>
+                                    {% endif %}
+                                {% endfor %}
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    {% endif %}
+
+    {% if followers|length > 0 %}
+        <div class="row justify-content-center my-5">
+            <div class="col-6 text-center">
+                <h5>Abonnés</h5>
+                <table class="table table-bordered">
+                    <tbody>
+                        {% for follower in followers %}
+                            <tr>
+                               <td>{{ follower }}</td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    {% endif %}
+
+{% endblock %}
