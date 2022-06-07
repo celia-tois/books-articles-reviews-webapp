@@ -6,7 +6,23 @@
         <div class="my-3 col-6">
             <form method="post" id="create-ticket" enctype="multipart/form-data">
                 {% csrf_token %}
-                {{ form.as_p }}
+                <div>
+                    <p>Titre</p>
+                    {{ form.title }}
+                </div>
+                <div class="my-3">
+                    <p>Description</p>
+                    {{ form.description }}
+                </div>
+                <div class="my-3">
+                    <p>Image</p>
+                    <div class="col-12" id="ticket-image">
+                        <img src="{{ ticket.image.url }}" class="img-fluid rounded-start" alt="Couverture livre">
+                    </div>
+                    <div id="edit-image">
+                        {{ form.image }}
+                    </div>
+                </div>
                 <button type="submit" class="btn btn-secondary col-12 my-4">Envoyer</button>
             </form>
         </div>

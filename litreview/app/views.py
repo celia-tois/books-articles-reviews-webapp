@@ -11,21 +11,25 @@ User = get_user_model()
 def flux(request):
     user_logged_in = User.objects.get(username=request.user)
     users_to_display = [user_logged_in]
+    full_stars = []
+    empty_stars = []
     for subscription in models.UserFollows.objects.filter(user=request.user):
         user = User.objects.get(username=subscription.followed_user)
         users_to_display.append(user)
     tickets = models.Ticket.objects.filter(user__in=users_to_display)
-    reviews = models.Review.objects.filter(user__in=users_to_display)
-    for review in reviews:
+    reviews = []
+    for review in models.Review.objects.filter(user__in=users_to_display):
         rating = review.rating
         full_stars = [star for star in range(rating)]
         empty_stars = [star for star in range(5 - rating)]
+        reviews.append({
+            'review': review,
+            'rating': {'full_stars': full_stars, 'empty_stars': empty_stars}
+        })
     context = {
         'tickets': tickets,
         'reviews': reviews,
         'user_logged_in': user_logged_in,
-        'full_stars': full_stars,
-        'empty_stars': empty_stars
     }
     return render(request, 'app/flux.html', context=context)
 
@@ -34,17 +38,19 @@ def flux(request):
 def display_posts(request):
     user_logged_in = User.objects.get(username=request.user)
     tickets = models.Ticket.objects.filter(user=user_logged_in)
-    reviews = models.Review.objects.filter(user=user_logged_in)
-    for review in reviews:
+    reviews = []
+    for review in models.Review.objects.filter(user=user_logged_in):
         rating = review.rating
         full_stars = [star for star in range(rating)]
         empty_stars = [star for star in range(5 - rating)]
+        reviews.append({
+            'review': review,
+            'rating': {'full_stars': full_stars, 'empty_stars': empty_stars}
+        })
     context = {
         'tickets': tickets,
         'reviews': reviews,
         'user_logged_in': user_logged_in,
-        'full_stars': full_stars,
-        'empty_stars': empty_stars
     }
     return render(request, 'app/posts.html', context=context)
 
@@ -106,7 +112,7 @@ def edit_ticket(request, id):
         if form.is_valid():
             form.save()
             return redirect('posts')
-    return render(request, 'app/edit_ticket.html', context={'form': form})
+    return render(request, 'app/edit_ticket.html', context={'form': form, 'ticket': ticket})
 
 
 @login_required
@@ -157,3 +163,12 @@ def edit_review(request, id):
         'rating_range': rating_range
     }
     return render(request, 'app/edit_review.html', context=context)
+
+
+@login_required
+def delete_review(request, id):
+    review = get_object_or_404(models.Review, id=id)
+    if request.method == 'POST':
+        review.delete()
+        return redirect('posts')
+    return render(request, 'app/delete_review.html', context={'review': review})
