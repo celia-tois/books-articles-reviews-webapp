@@ -38,11 +38,18 @@
                         </div>
                         <div class="my-3">
                             <p>Note</p>
-                            {% for number in "012345" %}
-                                <div class="form-check form-check-inline">
-                                    <input class="form-check-input" type="radio" name="rating" id="rating{{ number }}" value="{{ number }}">
-                                    <label class="form-check-label" for="rating{{ number }}">{{ number }}</label>
-                                </div>
+                            {% for number in rating_range %}
+                                {% if form.rating.value == number %}
+                                    <div class="form-check form-check-inline">
+                                        <input class="form-check-input" type="radio" name="rating" id="rating{{ number }}" value="{{ number }}" checked>
+                                        <label class="form-check-label" for="rating{{ number }}">{{ number }}</label>
+                                    </div>
+                                {% else %}
+                                    <div class="form-check form-check-inline">
+                                        <input class="form-check-input" type="radio" name="rating" id="rating{{ number }}" value="{{ number }}">
+                                        <label class="form-check-label" for="rating{{ number }}">{{ number }}</label>
+                                    </div>
+                                {% endif %}
                             {% endfor %}
                         </div>
                         <div class="my-3 full-width">

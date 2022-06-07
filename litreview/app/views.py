@@ -131,16 +131,29 @@ def create_review(request, id):
             review.ticket = ticket
             review.save()
             return redirect('flux')
-    return render(request, 'app/create_review.html', context={'form': form, 'ticket': ticket, 'user_logged_in': user_logged_in})
+    rating_range = [number for number in range(6)]
+    context = {
+        'form': form,
+        'ticket': ticket,
+        'user_logged_in': user_logged_in,
+        'rating_range': rating_range
+    }
+    return render(request, 'app/create_review.html', context=context)
 
 
 @login_required
 def edit_review(request, id):
     review = get_object_or_404(models.Review, id=id)
-    form = forms.TicketForm(instance=review)
+    form = forms.ReviewForm(instance=review)
     if request.method == 'POST':
         form = forms.ReviewForm(request.POST, instance=review)
         if form.is_valid():
             form.save()
             return redirect('posts')
-    return render(request, 'app/create_review.html', context={'form': form})
+    rating_range = [number for number in range(6)]
+    context = {
+        'form': form,
+        'ticket': review.ticket,
+        'rating_range': rating_range
+    }
+    return render(request, 'app/edit_review.html', context=context)
