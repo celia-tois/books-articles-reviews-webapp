@@ -1,8 +1,10 @@
 from django.shortcuts import render, redirect, get_object_or_404
+from django.db.models import Value, CharField
 from django.contrib.auth import get_user_model
 from django.contrib.auth.decorators import login_required
-from . import forms, models
 from django.contrib.auth.models import User
+from itertools import chain
+from . import forms, models
 
 User = get_user_model()
 
@@ -11,24 +13,28 @@ User = get_user_model()
 def flux(request):
     user_logged_in = User.objects.get(username=request.user)
     users_to_display = [user_logged_in]
-    full_stars = []
-    empty_stars = []
     for subscription in models.UserFollows.objects.filter(user=request.user):
         user = User.objects.get(username=subscription.followed_user)
         users_to_display.append(user)
     tickets = models.Ticket.objects.filter(user__in=users_to_display)
-    reviews = []
-    for review in models.Review.objects.filter(user__in=users_to_display):
-        rating = review.rating
-        full_stars = [star for star in range(rating)]
-        empty_stars = [star for star in range(5 - rating)]
-        reviews.append({
-            'review': review,
-            'rating': {'full_stars': full_stars, 'empty_stars': empty_stars}
-        })
+    tickets = tickets.annotate(content_type=Value('TICKET', CharField()))
+
+    reviews = models.Review.objects.filter(user__in=users_to_display)
+    reviews = reviews.annotate(content_type=Value('REVIEW', CharField()))
+
+    posts = sorted(chain(reviews, tickets), key=lambda post: post.time_created, reverse=True)
+
+    for i in range(len(posts)):
+        if posts[i].content_type == 'REVIEW':
+            post = posts[i]
+            rating = post.rating
+            full_stars = [star for star in range(rating)]
+            empty_stars = [star for star in range(5 - rating)]
+            posts[i] = {"review": post,
+                    "rating": {"full_stars": full_stars, "empty_stars": empty_stars}}
+
     context = {
-        'tickets': tickets,
-        'reviews': reviews,
+        'posts': posts,
         'user_logged_in': user_logged_in,
     }
     return render(request, 'app/flux.html', context=context)
