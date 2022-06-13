@@ -13,76 +13,11 @@
             </div>
             {% for post in posts %}
                 {% if post.ticket %}
-                    <div class="card mb-3" style="max-width: 700px;">
-                        <div class="row g-0">
-                            <div class="col-md-4">
-                                {% if post.ticket.image.url != null %}
-                                    <img src="{{ post.ticket.image.url }}" class="img-fluid rounded-start" alt="Couverture livre">
-                                {% endif %}
-                            </div>
-                            <div class="col-md-8">
-                              <div class="card-body">
-                                {% if post.ticket.user == user_logged_in %}
-                                    <p>Vous avez demandé une critique</p>
-                                {% else %}
-                                    <p>{{ post.ticket.user }} a demandé une critique</p>
-                                {% endif %}
-                                  <p class="card-text">
-                                      <small class="text-muted">{{ post.ticket.time_created }}</small>
-                                  </p>
-                                  <h6 class="card-title">{{ post.ticket.title }}</h6>
-                                  <p class="card-text">{{ post.ticket.description }}</p>
-                              </div>
-                                {% if post.has_review == False %}
-                                    <div class="d-flex justify-content-center mb-4">
-                                        <a href="{% url 'create_review' post.ticket.id %}" class="btn btn-outline-dark">Créer une critique</a>
-                                    </div>
-                                {% endif %}
-                            </div>
-                        </div>
-                    </div>
+                    {% include 'app/ticket_snippet.html' %}
 
                 {% elif post.review %}
-                    <div class="card g-0 my-3">
-                        <div class="card-header d-flex justify-content-center bg-transparent">
-                            <div class="my-3">
-                                {% if post.review.user == user_logged_in %}
-                                    <p>Vous avez publié une critique</p>
-                                {% else %}
-                                    <p>{{ post.review.ticket.user }} a publié une critique</p>
-                                {% endif %}
-                                <p class="card-text"><small class="text-muted">{{ post.review.time_created }}</small></p>
-                                <h5 class="card-title">{{ post.review.headline }} -
-                                    {% for star in post.rating.full_stars %}
-                                        <i class="fas fa-star"></i>
-                                    {% endfor %}
-                                    {% for star in post.rating.empty_stars %}
-                                        <i class="far fa-star"></i>
-                                    {% endfor %}
-                                </h5>
-                                <p class="card-text"><i class="bi bi-star-fill"></i></p>
-                                <p class="card-text">{{ post.review.body }}</p>
-                            </div>
-                        </div>
-                        <div class="card-body bg-light">
-                            <div class="card mb-3 mt-3" style="max-width: 540px;">
-                                <div class="row g-0">
-                                    <div class="col-md-4">
-                                        {% if post.review.ticket.image.url != null %}
-                                            <img src="{{ post.review.ticket.image.url }}" class="img-fluid rounded-start" alt="Couverture livre">
-                                        {% endif %}
-                                    </div>
-                                    <div class="col-md-8">
-                                        <div class="card-body">
-                                            <p class="card-text">Ticket - {{ post.review.ticket.user }}</p>
-                                            <p class="card-text">{{ post.review.ticket.title }}</p>
-                                            <p class="card-text">{{ post.review.ticket.description }}</p>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
+                    {% include 'app/review_snippet.html' %}
+
                 {%endif %}
             {% endfor %}
         </div>
