@@ -24,20 +24,35 @@ def flux(request):
 
     posts = sorted(chain(reviews, tickets), key=lambda post: post.time_created, reverse=True)
 
-    for i in range(len(posts)):
-        if posts[i].content_type == 'REVIEW':
-            post = posts[i]
-            rating = post.rating
-            full_stars = [star for star in range(rating)]
-            empty_stars = [star for star in range(5 - rating)]
-            posts[i] = {"review": post,
-                    "rating": {"full_stars": full_stars, "empty_stars": empty_stars}}
+    for post in range(len(posts)):
+        if posts[post].content_type == 'TICKET':
+            check_if_ticket_has_review(posts, post)
+        else:
+            handle_rating_stars(posts, post)
 
     context = {
         'posts': posts,
         'user_logged_in': user_logged_in,
     }
     return render(request, 'app/flux.html', context=context)
+
+
+def check_if_ticket_has_review(posts, post):
+    ticket_in_review = models.Review.objects.filter(ticket=posts[post])
+    if len(ticket_in_review) == 1:
+        has_review = True
+    else:
+        has_review = False
+    posts[post] = {"ticket": posts[post],
+                   "has_review": has_review}
+
+
+def handle_rating_stars(posts, post):
+    rating = posts[post].rating
+    full_stars = [star for star in range(rating)]
+    empty_stars = [star for star in range(5 - rating)]
+    posts[post] = {"review": posts[post],
+                   "rating": {"full_stars": full_stars, "empty_stars": empty_stars}}
 
 
 @login_required

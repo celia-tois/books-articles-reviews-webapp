@@ -12,35 +12,37 @@
                 </a>
             </div>
             {% for post in posts %}
-                {% if post.content_type == 'TICKET' %}
+                {% if post.ticket %}
                     <div class="card mb-3" style="max-width: 700px;">
                         <div class="row g-0">
                             <div class="col-md-4">
-                                {% if post.image.url != null %}
-                                    <img src="{{ post.image.url }}" class="img-fluid rounded-start" alt="Couverture livre">
+                                {% if post.ticket.image.url != null %}
+                                    <img src="{{ post.ticket.image.url }}" class="img-fluid rounded-start" alt="Couverture livre">
                                 {% endif %}
                             </div>
                             <div class="col-md-8">
                               <div class="card-body">
-                                {% if post.user == user_logged_in %}
+                                {% if post.ticket.user == user_logged_in %}
                                     <p>Vous avez demandé une critique</p>
                                 {% else %}
-                                    <p>{{ post.user }} a demandé une critique</p>
+                                    <p>{{ post.ticket.user }} a demandé une critique</p>
                                 {% endif %}
                                   <p class="card-text">
-                                      <small class="text-muted">{{ post.time_created }}</small>
+                                      <small class="text-muted">{{ post.ticket.time_created }}</small>
                                   </p>
-                                  <h6 class="card-title">{{ post.title }}</h6>
-                                  <p class="card-text">{{ post.description }}</p>
+                                  <h6 class="card-title">{{ post.ticket.title }}</h6>
+                                  <p class="card-text">{{ post.ticket.description }}</p>
                               </div>
-                                <div class="d-flex justify-content-center mb-4">
-                                    <a href="{% url 'create_review' post.id %}" class="btn btn-outline-dark">Créer une critique</a>
-                                </div>
+                                {% if post.has_review == False %}
+                                    <div class="d-flex justify-content-center mb-4">
+                                        <a href="{% url 'create_review' post.ticket.id %}" class="btn btn-outline-dark">Créer une critique</a>
+                                    </div>
+                                {% endif %}
                             </div>
                         </div>
                     </div>
 
-                {% else %}
+                {% elif post.review %}
                     <div class="card g-0 my-3">
                         <div class="card-header d-flex justify-content-center bg-transparent">
                             <div class="my-3">
