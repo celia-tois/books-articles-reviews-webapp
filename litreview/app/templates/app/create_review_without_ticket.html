@@ -1,0 +1,49 @@
+{% extends 'base.html' %}
+{% block content %}
+<div class="row justify-content-center my-5">
+    <h5 class="text-center">Créer une critique</h5>
+    <div class="card g-0 col-8 my-3">
+        <form method="post" id="create-review-without-ticket" enctype="multipart/form-data">
+            {% csrf_token %}
+            <div class="card-header full-width">
+                <h6 class="mt-2 mb-3">Livre/Article</h6>
+                <div>
+                    <p>Titre</p>
+                    {{ ticket_form.title }}
+                </div>
+                <div class="my-3">
+                    <p>Description</p>
+                    {{ ticket_form.description }}
+                </div>
+                <div class="my-3">
+                    <p>Image</p>
+                    {{ ticket_form.image }}
+                </div>
+            </div>
+            <div class="card-body">
+                <div class="my-3">
+                    <h6 class="mb-3">Critique</h6>
+                    <div class="my-3 full-width">
+                        <p>Titre</p>
+                        {{ review_form.headline }}
+                    </div>
+                    <div class="my-3">
+                        <p>Note</p>
+                        {% for number in rating_range %}
+                            <div class="form-check form-check-inline">
+                                <input class="form-check-input" type="radio" name="rating" id="rating{{ number }}" value="{{ number }}">
+                                <label class="form-check-label" for="rating{{ number }}">{{ number }}</label>
+                            </div>
+                        {% endfor %}
+                    </div>
+                    <div class="my-3 full-width">
+                        <p>Commentaire</p>
+                        {{ review_form.body }}
+                    </div>
+                    <button type="submit" class="btn btn-secondary col-12 my-4">Envoyer</button>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}

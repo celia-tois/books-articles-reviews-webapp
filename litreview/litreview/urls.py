@@ -35,6 +35,7 @@ urlpatterns = [
     path('<int:id>/edit-ticket/', app.views.edit_ticket, name='edit_ticket'),
     path('<int:id>/delete-ticket/', app.views.delete_ticket, name='delete_ticket'),
     path('<int:id>/create-review/', app.views.create_review, name='create_review'),
+    path('create-review/', app.views.create_review_without_ticket, name='create_review_without_ticket'),
     path('<int:id>/edit-review/', app.views.edit_review, name='edit_review'),
     path('<int:id>/delete-review/', app.views.delete_review, name='delete_review'),
 ]

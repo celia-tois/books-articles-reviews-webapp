@@ -169,6 +169,31 @@ def create_review(request, id):
 
 
 @login_required
+def create_review_without_ticket(request):
+    ticket_form = forms.TicketForm()
+    review_form = forms.ReviewForm()
+    rating_range = [number for number in range(6)]
+    if request.method == 'POST':
+        ticket_form = forms.TicketForm(request.POST, request.FILES)
+        review_form = forms.TicketForm(request.POST)
+        if ticket_form.is_valid() and review_form.is_valid():
+            ticket = ticket_form.save(commit=False)
+            ticket.user = request.user
+            ticket.save()
+            review_ticket = models.Ticket.objects.get(id=ticket.id)
+            review = review_form.save(commit=False)
+            review.user = request.user
+            review.ticket = review_ticket
+            review.save()
+            return redirect('flux')
+
+    context = {'ticket_form': ticket_form,
+               'review_form': review_form,
+               'rating_range': rating_range}
+    return render(request, 'app/create_review_without_ticket.html', context=context)
+
+
+@login_required
 def edit_review(request, id):
     review = get_object_or_404(models.Review, id=id)
     form = forms.ReviewForm(instance=review)
