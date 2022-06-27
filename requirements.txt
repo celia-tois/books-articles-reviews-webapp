@@ -1,4 +1,2 @@
-asgiref==3.5.1
-Django==4.0.4
-Pillow==9.1.0
-sqlparse==0.4.2
+certifi==2021.10.8
+django-cleanup==6.0.0
