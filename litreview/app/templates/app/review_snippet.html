@@ -37,4 +37,10 @@
             </div>
         </div>
     </div>
+    {% if 'posts' in request.path %}
+        <div class="d-flex justify-content-center my-3 gap-2">
+            <a href="{% url 'edit_review' post.review.id %}" class="btn btn-outline-dark">Modifier</a>
+            <a href="{% url 'delete_review' post.review.id %}" class="btn btn-outline-dark">Supprimer</a>
+        </div>
+    {% endif %}
 </div>

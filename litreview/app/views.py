@@ -59,18 +59,21 @@ def handle_rating_stars(posts, post):
 def display_posts(request):
     user_logged_in = User.objects.get(username=request.user)
     tickets = models.Ticket.objects.filter(user=user_logged_in)
-    reviews = []
-    for review in models.Review.objects.filter(user=user_logged_in):
-        rating = review.rating
-        full_stars = [star for star in range(rating)]
-        empty_stars = [star for star in range(5 - rating)]
-        reviews.append({
-            'review': review,
-            'rating': {'full_stars': full_stars, 'empty_stars': empty_stars}
-        })
+    tickets = tickets.annotate(content_type=Value('TICKET', CharField()))
+
+    reviews = models.Review.objects.filter(user=user_logged_in)
+    reviews = reviews.annotate(content_type=Value('REVIEW', CharField()))
+
+    posts = sorted(chain(reviews, tickets), key=lambda post: post.time_created, reverse=True)
+
+    for post in range(len(posts)):
+        if posts[post].content_type == 'TICKET':
+            posts[post] = {"ticket": posts[post]}
+        else:
+            handle_rating_stars(posts, post)
+
     context = {
-        'tickets': tickets,
-        'reviews': reviews,
+        'posts': posts,
         'user_logged_in': user_logged_in,
     }
     return render(request, 'app/posts.html', context=context)

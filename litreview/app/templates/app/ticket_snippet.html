@@ -18,9 +18,16 @@
               <h6 class="card-title">{{ post.ticket.title }}</h6>
               <p class="card-text">{{ post.ticket.description }}</p>
           </div>
-            {% if post.has_review == False %}
-                <div class="d-flex justify-content-center mb-4">
-                    <a href="{% url 'create_review' post.ticket.id %}" class="btn btn-outline-dark">Créer une critique</a>
+            {% if 'flux' in request.path %}
+                {% if post.has_review == False %}
+                    <div class="d-flex justify-content-center mb-4">
+                        <a href="{% url 'create_review' post.ticket.id %}" class="btn btn-outline-dark">Créer une critique</a>
+                    </div>
+                {% endif %}
+            {% elif 'posts' in request.path %}
+                <div class="d-flex justify-content-center mb-4 gap-2">
+                    <a href="{% url 'edit_ticket' post.ticket.id %}" class="btn btn-outline-dark">Modifier</a>
+                    <a href="{% url 'delete_ticket' post.ticket.id %}" class="btn btn-outline-dark">Supprimer</a>
                 </div>
             {% endif %}
         </div>

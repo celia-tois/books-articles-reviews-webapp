@@ -5,78 +5,16 @@
     <div class="row justify-content-center my-5">
         <h5 class="text-center">Vos posts</h5>
         <div class="col-6 my-3">
-            {% for ticket in tickets %}
-                <div class="card mb-3" style="max-width: 700px;">
-                    <div class="row g-0">
-                        <div class="col-md-4">
-                            {% if ticket.image.url != null %}
-                                <img src="{{ ticket.image.url }}" class="img-fluid rounded-start" alt="Couverture livre">
-                            {% endif %}
-                        </div>
-                        <div class="col-md-8">
-                          <div class="card-body">
-                              <p>Vous avez demandé une critique</p>
-                              <p class="card-text">
-                                  <small class="text-muted">{{ ticket.time_created }}</small>
-                              </p>
-                              <h6 class="card-title">{{ ticket.title }}</h6>
-                              <p class="card-text">{{ ticket.description }}</p>
-                          </div>
-                            <div class="d-flex justify-content-center mb-4 gap-2">
-                                <a href="{% url 'edit_ticket' ticket.id %}" class="btn btn-outline-dark">Modifier</a>
-                                <a href="{% url 'delete_ticket' ticket.id %}" class="btn btn-outline-dark">Supprimer</a>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            {% endfor %}
+            {% for post in posts %}
+                {% if post.ticket %}
+                    {% include 'app/ticket_snippet.html' %}
 
-            {% for review in reviews %}
-                <div class="card g-0 my-3">
-                    <div class="card-header d-flex justify-content-center bg-transparent">
-                        <div class="my-3">
-                            {% if review.review.user == user_logged_in %}
-                                <p>Vous avez publié une critique</p>
-                            {% else %}
-                                <p>{{ ticket.user }} a publié une critique</p>
-                            {% endif %}
-                            <p class="card-text"><small class="text-muted">{{ review.review.time_created }}</small></p>
-                            <h5 class="card-title">{{ review.review.headline }} -
-                                {% for star in review.rating.full_stars %}
-                                    <i class="fas fa-star"></i>
-                                {% endfor %}
-                                {% for star in review.rating.empty_stars %}
-                                    <i class="far fa-star"></i>
-                                {% endfor %}
-                            </h5>
-                            </p>
-                            <p class="card-text">{{ review.review.body }}</p>
-                        </div>
-                    </div>
-                    <div class="card-body bg-light">
-                        <div class="card mb-3 mt-3" style="max-width: 540px;">
-                            <div class="row g-0">
-                                <div class="col-md-4">
-                                    {% if review.review.ticket.image.url != null %}
-                                        <img src="{{ review.review.ticket.image.url }}" class="img-fluid rounded-start" alt="Couverture livre">
-                                    {% endif %}
-                                </div>
-                                <div class="col-md-8">
-                                    <div class="card-body">
-                                        <p class="card-text">Ticket - {{ review.review.ticket.user }}</p>
-                                        <p class="card-text">{{ review.review.ticket.title }}</p>
-                                        <p class="card-text">{{ review.review.ticket.description }}</p>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="d-flex justify-content-center my-3 gap-2">
-                        <a href="{% url 'edit_review' review.review.id %}" class="btn btn-outline-dark">Modifier</a>
-                        <a href="{% url 'delete_review' review.review.id %}" class="btn btn-outline-dark">Supprimer</a>
-                    </div>
-                </div>
-            {%endfor %}
+                {% elif post.review %}
+                    {% include 'app/review_snippet.html' %}
+
+                {%endif %}
+            {% endfor %}
         </div>
     </div>
+
 {% endblock %}
