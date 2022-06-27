@@ -17,7 +17,9 @@
                 <div class="my-3">
                     <p>Image</p>
                     <div class="col-12" id="ticket-image">
-                        <img src="{{ ticket.image.url }}" class="img-fluid rounded-start" alt="Couverture livre">
+                        {% if ticket.image.url != null %}
+                            <img src="{{ ticket.image.url }}" class="img-fluid rounded-start" alt="Couverture livre">
+                        {% endif %}
                     </div>
                     <div id="edit-image">
                         {{ form.image }}

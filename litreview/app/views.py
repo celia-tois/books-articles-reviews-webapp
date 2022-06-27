@@ -128,21 +128,27 @@ def create_ticket(request):
 def edit_ticket(request, id):
     ticket = get_object_or_404(models.Ticket, id=id)
     form = forms.TicketForm(instance=ticket)
-    if request.method == 'POST':
-        form = forms.TicketForm(request.POST, request.FILES, instance=ticket)
-        if form.is_valid():
-            form.save()
-            return redirect('posts')
-    return render(request, 'app/edit_ticket.html', context={'form': form, 'ticket': ticket})
+    if request.user == ticket.user:
+        if request.method == 'POST':
+            form = forms.TicketForm(request.POST, request.FILES, instance=ticket)
+            if form.is_valid():
+                form.save()
+                return redirect('posts')
+        return render(request, 'app/edit_ticket.html', context={'form': form, 'ticket': ticket})
+    else:
+        return redirect('posts')
 
 
 @login_required
 def delete_ticket(request, id):
     ticket = get_object_or_404(models.Ticket, id=id)
-    if request.method == 'POST':
-        ticket.delete()
+    if request.user == ticket.user:
+        if request.method == 'POST':
+            ticket.delete()
+            return redirect('posts')
+        return render(request, 'app/delete_ticket.html', context={'ticket': ticket})
+    else:
         return redirect('posts')
-    return render(request, 'app/delete_ticket.html', context={'ticket': ticket})
 
 
 @login_required
@@ -175,7 +181,7 @@ def create_review_without_ticket(request):
     rating_range = [number for number in range(6)]
     if request.method == 'POST':
         ticket_form = forms.TicketForm(request.POST, request.FILES)
-        review_form = forms.TicketForm(request.POST)
+        review_form = forms.ReviewForm(request.POST)
         if ticket_form.is_valid() and review_form.is_valid():
             ticket = ticket_form.save(commit=False)
             ticket.user = request.user
@@ -197,24 +203,30 @@ def create_review_without_ticket(request):
 def edit_review(request, id):
     review = get_object_or_404(models.Review, id=id)
     form = forms.ReviewForm(instance=review)
-    if request.method == 'POST':
-        form = forms.ReviewForm(request.POST, instance=review)
-        if form.is_valid():
-            form.save()
-            return redirect('posts')
-    rating_range = [number for number in range(6)]
-    context = {
-        'form': form,
-        'ticket': review.ticket,
-        'rating_range': rating_range
-    }
-    return render(request, 'app/edit_review.html', context=context)
+    if request.user == review.user:
+        if request.method == 'POST':
+            form = forms.ReviewForm(request.POST, instance=review)
+            if form.is_valid():
+                form.save()
+                return redirect('posts')
+        rating_range = [number for number in range(6)]
+        context = {
+            'form': form,
+            'ticket': review.ticket,
+            'rating_range': rating_range
+        }
+        return render(request, 'app/edit_review.html', context=context)
+    else:
+        return redirect('posts')
 
 
 @login_required
 def delete_review(request, id):
     review = get_object_or_404(models.Review, id=id)
-    if request.method == 'POST':
-        review.delete()
+    if request.user == review.user:
+        if request.method == 'POST':
+            review.delete()
+            return redirect('posts')
+        return render(request, 'app/delete_review.html', context={'review': review})
+    else:
         return redirect('posts')
-    return render(request, 'app/delete_review.html', context={'review': review})
