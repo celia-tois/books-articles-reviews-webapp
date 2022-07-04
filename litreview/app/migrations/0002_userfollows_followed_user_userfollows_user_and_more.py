@@ -16,13 +16,21 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='userfollows',
             name='followed_user',
-            field=models.ForeignKey(default='', on_delete=django.db.models.deletion.CASCADE, related_name='followed_by', to=settings.AUTH_USER_MODEL),
+            field=models.ForeignKey(
+                default='',
+                on_delete=django.db.models.deletion.CASCADE,
+                related_name='followed_by',
+                to=settings.AUTH_USER_MODEL),
             preserve_default=False,
         ),
         migrations.AddField(
             model_name='userfollows',
             name='user',
-            field=models.ForeignKey(default='', on_delete=django.db.models.deletion.CASCADE, related_name='following', to=settings.AUTH_USER_MODEL),
+            field=models.ForeignKey(
+                default='',
+                on_delete=django.db.models.deletion.CASCADE,
+                related_name='following',
+                to=settings.AUTH_USER_MODEL),
             preserve_default=False,
         ),
         migrations.AlterUniqueTogether(
