@@ -2,7 +2,7 @@ from django.shortcuts import render, redirect, get_object_or_404
 from django.db.models import Value, CharField
 from django.contrib.auth import get_user_model
 from django.contrib.auth.decorators import login_required
-from django.contrib.auth.models import User
+from django.core.exceptions import ObjectDoesNotExist
 from itertools import chain
 from . import forms, models
 
@@ -22,7 +22,8 @@ def flux(request):
     reviews = models.Review.objects.filter(user__in=users_to_display)
     reviews = reviews.annotate(content_type=Value('REVIEW', CharField()))
 
-    posts = sorted(chain(reviews, tickets), key=lambda post: post.time_created, reverse=True)
+    posts = sorted(chain(reviews, tickets),
+                   key=lambda post: post.time_created, reverse=True)
 
     for post in range(len(posts)):
         if posts[post].content_type == 'TICKET':
@@ -52,7 +53,8 @@ def handle_rating_stars(posts, post):
     full_stars = [star for star in range(rating)]
     empty_stars = [star for star in range(5 - rating)]
     posts[post] = {"review": posts[post],
-                   "rating": {"full_stars": full_stars, "empty_stars": empty_stars}}
+                   "rating": {"full_stars": full_stars,
+                              "empty_stars": empty_stars}}
 
 
 @login_required
@@ -64,7 +66,8 @@ def display_posts(request):
     reviews = models.Review.objects.filter(user=user_logged_in)
     reviews = reviews.annotate(content_type=Value('REVIEW', CharField()))
 
-    posts = sorted(chain(reviews, tickets), key=lambda post: post.time_created, reverse=True)
+    posts = sorted(chain(reviews, tickets),
+                   key=lambda post: post.time_created, reverse=True)
 
     for post in range(len(posts)):
         if posts[post].content_type == 'TICKET':
@@ -82,16 +85,21 @@ def display_posts(request):
 @login_required
 def follow_users(request):
     users = User.objects.all()
-    subscriptions = [subscription.followed_user for subscription in models.UserFollows.objects.filter(user=request.user)]
-    followers = [follower.user for follower in models.UserFollows.objects.filter(followed_user=request.user)]
+    subscriptions = [subscription.followed_user for subscription
+                     in models.UserFollows.objects.filter(user=request.user)]
+    followers = [follower.user for follower in
+                 models.UserFollows.objects.filter(followed_user=request.user)]
     if request.method == 'POST':
         try:
-            user_to_follow = User.objects.get(username=request.POST['username'])
-            if user_to_follow != request.user and user_to_follow not in subscriptions:
-                user_followed = models.UserFollows(user=request.user, followed_user=user_to_follow)
+            user_to_follow = User.objects\
+                .get(username=request.POST['username'])
+            if user_to_follow != request.user and \
+                    user_to_follow not in subscriptions:
+                user_followed = models.UserFollows(
+                    user=request.user, followed_user=user_to_follow)
                 user_followed.save()
                 return redirect('subscriptions')
-        except:
+        except ObjectDoesNotExist:
             print("Impossible de s'abonner à cet utilisateur")
     context = {
         'users': users,
@@ -107,11 +115,15 @@ def unfollow_user(request, id):
     for user in models.UserFollows.objects.filter(user=request.user):
         if user.followed_user == user_selected:
             user_to_unfollow = user
-            username_of_user_to_unfollow = user_to_unfollow.followed_user.username
+            username_of_user_to_unfollow =\
+                user_to_unfollow.followed_user.username
             if request.method == 'POST':
                 user_to_unfollow.delete()
                 return redirect('subscriptions')
-    return render(request, 'app/unfollow_user.html', context={'username_of_user_to_unfollow': username_of_user_to_unfollow})
+    return render(
+        request,
+        'app/unfollow_user.html',
+        context={'username_of_user_to_unfollow': username_of_user_to_unfollow})
 
 
 @login_required
@@ -133,11 +145,15 @@ def edit_ticket(request, id):
     form = forms.TicketForm(instance=ticket)
     if request.user == ticket.user:
         if request.method == 'POST':
-            form = forms.TicketForm(request.POST, request.FILES, instance=ticket)
+            form = forms.TicketForm(request.POST,
+                                    request.FILES,
+                                    instance=ticket)
             if form.is_valid():
                 form.save()
                 return redirect('posts')
-        return render(request, 'app/edit_ticket.html', context={'form': form, 'ticket': ticket})
+        return render(request,
+                      'app/edit_ticket.html',
+                      context={'form': form, 'ticket': ticket})
     else:
         return redirect('posts')
 
@@ -149,7 +165,9 @@ def delete_ticket(request, id):
         if request.method == 'POST':
             ticket.delete()
             return redirect('posts')
-        return render(request, 'app/delete_ticket.html', context={'ticket': ticket})
+        return render(request,
+                      'app/delete_ticket.html',
+                      context={'ticket': ticket})
     else:
         return redirect('posts')
 
@@ -199,7 +217,9 @@ def create_review_without_ticket(request):
     context = {'ticket_form': ticket_form,
                'review_form': review_form,
                'rating_range': rating_range}
-    return render(request, 'app/create_review_without_ticket.html', context=context)
+    return render(request,
+                  'app/create_review_without_ticket.html',
+                  context=context)
 
 
 @login_required
@@ -230,6 +250,8 @@ def delete_review(request, id):
         if request.method == 'POST':
             review.delete()
             return redirect('posts')
-        return render(request, 'app/delete_review.html', context={'review': review})
+        return render(request,
+                      'app/delete_review.html',
+                      context={'review': review})
     else:
         return redirect('posts')

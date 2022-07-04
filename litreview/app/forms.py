@@ -9,7 +9,8 @@ class TicketForm(forms.ModelForm):
 
 
 class ReviewForm(forms.ModelForm):
+    image = forms.ImageField(widget=forms.FileInput)
+
     class Meta:
         model = Review
         exclude = ('user', 'ticket')
-
