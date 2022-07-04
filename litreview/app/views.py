@@ -9,7 +9,7 @@ from . import forms, models
 User = get_user_model()
 
 
-@login_required
+@login_required(login_url='login')
 def flux(request):
     user_logged_in = User.objects.get(username=request.user)
     users_to_display = [user_logged_in]
@@ -57,7 +57,7 @@ def handle_rating_stars(posts, post):
                               "empty_stars": empty_stars}}
 
 
-@login_required
+@login_required(login_url='login')
 def display_posts(request):
     user_logged_in = User.objects.get(username=request.user)
     tickets = models.Ticket.objects.filter(user=user_logged_in)
@@ -82,7 +82,7 @@ def display_posts(request):
     return render(request, 'app/posts.html', context=context)
 
 
-@login_required
+@login_required(login_url='login')
 def follow_users(request):
     users = User.objects.all()
     subscriptions = [subscription.followed_user for subscription
@@ -109,7 +109,7 @@ def follow_users(request):
     return render(request, 'app/follow_users.html', context=context)
 
 
-@login_required
+@login_required(login_url='login')
 def unfollow_user(request, id):
     user_selected = User.objects.get(id=id)
     for user in models.UserFollows.objects.filter(user=request.user):
@@ -126,7 +126,7 @@ def unfollow_user(request, id):
         context={'username_of_user_to_unfollow': username_of_user_to_unfollow})
 
 
-@login_required
+@login_required(login_url='login')
 def create_ticket(request):
     form = forms.TicketForm()
     if request.method == 'POST':
@@ -139,7 +139,7 @@ def create_ticket(request):
     return render(request, 'app/create_ticket.html', context={'form': form})
 
 
-@login_required
+@login_required(login_url='login')
 def edit_ticket(request, id):
     ticket = get_object_or_404(models.Ticket, id=id)
     form = forms.TicketForm(instance=ticket)
@@ -158,7 +158,7 @@ def edit_ticket(request, id):
         return redirect('posts')
 
 
-@login_required
+@login_required(login_url='login')
 def delete_ticket(request, id):
     ticket = get_object_or_404(models.Ticket, id=id)
     if request.user == ticket.user:
@@ -172,7 +172,7 @@ def delete_ticket(request, id):
         return redirect('posts')
 
 
-@login_required
+@login_required(login_url='login')
 def create_review(request, id):
     user_logged_in = User.objects.get(username=request.user)
     ticket = models.Ticket.objects.get(id=id)
@@ -195,7 +195,7 @@ def create_review(request, id):
     return render(request, 'app/create_review.html', context=context)
 
 
-@login_required
+@login_required(login_url='login')
 def create_review_without_ticket(request):
     ticket_form = forms.TicketForm()
     review_form = forms.ReviewForm()
@@ -222,7 +222,7 @@ def create_review_without_ticket(request):
                   context=context)
 
 
-@login_required
+@login_required(login_url='login')
 def edit_review(request, id):
     review = get_object_or_404(models.Review, id=id)
     form = forms.ReviewForm(instance=review)
@@ -243,7 +243,7 @@ def edit_review(request, id):
         return redirect('posts')
 
 
-@login_required
+@login_required(login_url='login')
 def delete_review(request, id):
     review = get_object_or_404(models.Review, id=id)
     if request.user == review.user:
