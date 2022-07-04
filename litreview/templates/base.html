@@ -8,7 +8,12 @@
         <link rel="stylesheet" href="{% static 'css/bootstrap.min.css' %}">
         <link rel="stylesheet" href="{% static 'css/bootstrap.css' %}">
         <style>
-            #signup-form ul, .helptext, #signup-form label {
+            #signup-form ul,
+            .helptext,
+            #signup-form label,
+            #image-clear_id,
+            #image-clear_id+label,
+            .errorlist {
                 display: none;
             }
             #signup-form input::placeholder {
@@ -28,9 +33,6 @@
                 width: 50%;
                 max-width: 240px;
            }
-           #image-clear_id, #image-clear_id+label {
-               display: none;
-          }
         </style>
     </head>
 

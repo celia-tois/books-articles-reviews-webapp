@@ -15,6 +15,14 @@
                     <form method="post" class="text-left" id="login">
                         {{ form.as_p }}
                         {% csrf_token %}
+                        {% if form.errors %}
+                            {% for error in form.non_field_errors %}
+                                <div class="alert alert-danger">
+                                    <strong>{{ error|escape }}</strong>
+                                </div>
+                            {% endfor %}
+                        {% endif %}
+
                         <button type="submit" class="btn btn-secondary col-12 my-2">Se connecter</button>
                     </form>
                 </div>
