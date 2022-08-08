@@ -5,12 +5,26 @@ from django.contrib.auth.decorators import login_required
 from django.core.exceptions import ObjectDoesNotExist
 from itertools import chain
 from . import forms, models
-
-User = get_user_model()
+from django.contrib.auth.models import User
 
 
 @login_required(login_url='login')
 def flux(request):
+    """
+    Display the :model:`models.Ticket` and :model:`models.Review` posted by the user logged in and the users followed by the user logged in.
+
+    **Context**
+
+    ``posts``
+        List of dicts: :model:`myapp.Ticket` and has_review (bool) / :model:`models.Review` and rating (dict).
+    ``user_logged_in``
+        An instance of :model:`User`
+
+    **Template:**
+
+    :template:`app/flux.html`
+
+    """
     user_logged_in = User.objects.get(username=request.user)
     users_to_display = [user_logged_in]
     for subscription in models.UserFollows.objects.filter(user=request.user):
@@ -39,6 +53,11 @@ def flux(request):
 
 
 def check_if_ticket_has_review(posts, post):
+    """
+    Create a dict containing the :model:`myapp.Ticket` and has_review (bool).
+    :arg: posts: List of :model:`myapp.Ticket`.
+    :arg: post: Integer indicating the location of the post in the list of posts.
+    """
     ticket_in_review = models.Review.objects.filter(ticket=posts[post])
     if len(ticket_in_review) == 1:
         has_review = True
@@ -49,6 +68,11 @@ def check_if_ticket_has_review(posts, post):
 
 
 def handle_rating_stars(posts, post):
+    """
+    Create a dict containing the :model:`myapp.Review` and rating (dict).
+    :arg: posts: List of :model:`myapp.Ticket`.
+    :arg: post: Integer indicating the location of the post in the list of posts.
+    """
     rating = posts[post].rating
     full_stars = [star for star in range(rating)]
     empty_stars = [star for star in range(5 - rating)]
@@ -59,6 +83,21 @@ def handle_rating_stars(posts, post):
 
 @login_required(login_url='login')
 def display_posts(request):
+    """
+    Display the :model:`models.Ticket` and :model:`models.Review` posted by the user logged in.
+
+    **Context**
+
+    ``posts``
+        List of dicts: :model:`myapp.Ticket` / :model:`models.Review` and rating (dict).
+    ``user_logged_in``
+        An instance of User.
+
+    **Template:**
+
+    :template:`app/posts.html`
+
+    """
     user_logged_in = User.objects.get(username=request.user)
     tickets = models.Ticket.objects.filter(user=user_logged_in)
     tickets = tickets.annotate(content_type=Value('TICKET', CharField()))
@@ -84,6 +123,23 @@ def display_posts(request):
 
 @login_required(login_url='login')
 def follow_users(request):
+    """
+    Display the list of :model:`User` followed by the user logged in and the users following the user logged in.
+
+    **Context**
+
+    ``users``
+        List of :model:`User`.
+    ``subscriptions``
+        List of :model:`models.UserFollows`.
+    ``followers``
+        List of :model:`models.UserFollows`.
+
+    **Template:**
+
+    :template:`app/follow_users.html`
+
+    """
     users = User.objects.all()
     subscriptions = [subscription.followed_user for subscription
                      in models.UserFollows.objects.filter(user=request.user)]
@@ -111,6 +167,19 @@ def follow_users(request):
 
 @login_required(login_url='login')
 def unfollow_user(request, id):
+    """
+    Display an instance of :model:`User` to unfollow.
+
+    **Context**
+
+    ``username_of_user_to_unfollow``
+        Username of the user to unfollow.
+
+    **Template:**
+
+    :template:`app/unfollow_user.html`
+
+    """
     user_selected = User.objects.get(id=id)
     for user in models.UserFollows.objects.filter(user=request.user):
         if user.followed_user == user_selected:
@@ -128,6 +197,19 @@ def unfollow_user(request, id):
 
 @login_required(login_url='login')
 def create_ticket(request):
+    """
+    Display a form to create an instance of :model:`models.Ticket`.
+
+    **Context**
+
+    ``form``
+        Form to create an instance of :model:`models.Ticket`.
+
+    **Template:**
+
+    :template:`app/create_ticket.html`
+
+    """
     form = forms.TicketForm()
     if request.method == 'POST':
         form = forms.TicketForm(request.POST, request.FILES)
@@ -141,6 +223,21 @@ def create_ticket(request):
 
 @login_required(login_url='login')
 def edit_ticket(request, id):
+    """
+    Display a form to modify an instance of :model:`models.Ticket`.
+
+    **Context**
+
+    ``form``
+        Form to modify an instance of :model:`models.Ticket`.
+    ``ticket``
+        An instance of :model:`models.Ticket` to modify.
+
+    **Template:**
+
+    :template:`app/edit_ticket.html`
+
+    """
     ticket = get_object_or_404(models.Ticket, id=id)
     form = forms.TicketForm(instance=ticket)
     if request.user == ticket.user:
@@ -160,6 +257,19 @@ def edit_ticket(request, id):
 
 @login_required(login_url='login')
 def delete_ticket(request, id):
+    """
+    Display an instance of :model:`models.Ticket` to delete.
+
+    **Context**
+
+    ``ticket``
+        An instance of :model:`models.Ticket` to delete.
+
+    **Template:**
+
+    :template:`app/delete_ticket.html`
+
+    """
     ticket = get_object_or_404(models.Ticket, id=id)
     if request.user == ticket.user:
         if request.method == 'POST':
@@ -174,6 +284,25 @@ def delete_ticket(request, id):
 
 @login_required(login_url='login')
 def create_review(request, id):
+    """
+    Display an instance of :model:`models.Ticket` and a form to create an instance of :model:`models.Review`.
+
+    **Context**
+
+    ``form``
+        Form to create an instance of :model:`models.Review`.
+    ``ticket``
+        An instance of :model:`models.Ticket` for which the review is created.
+    ``user_logged_in``
+        An instance of User.
+    ``rating_range``
+        List of int from zero to five.
+
+    **Template:**
+
+    :template:`app/create_review.html`
+
+    """
     user_logged_in = User.objects.get(username=request.user)
     ticket = models.Ticket.objects.get(id=id)
     form = forms.ReviewForm()
@@ -197,6 +326,23 @@ def create_review(request, id):
 
 @login_required(login_url='login')
 def create_review_without_ticket(request):
+    """
+    Display a form to create an instance of:model:`models.Ticket` and :model:`models.Review`.
+
+    **Context**
+
+    ``ticket_form``
+        Form to create an instance of :model:`models.Ticket`.
+    ``review_form``
+        Form to create an instance of :model:`models.Review`.
+    ``rating_range``
+        List of int from zero to five.
+
+    **Template:**
+
+    :template:`app/create_review_without_ticket.html`
+
+    """
     ticket_form = forms.TicketForm()
     review_form = forms.ReviewForm()
     rating_range = [number for number in range(6)]
@@ -224,6 +370,23 @@ def create_review_without_ticket(request):
 
 @login_required(login_url='login')
 def edit_review(request, id):
+    """
+    Display a form to modify an instance of :model:`models.Review`.
+
+    **Context**
+
+    ``form``
+        Form to modify an instance of :model:`models.Review`.
+    ``ticket``
+        An instance of :model:`models.Ticket` for which the review was created.
+    ``rating_range``
+        List of int from zero to five.
+
+    **Template:**
+
+    :template:`app/edit_review.html`
+
+    """
     review = get_object_or_404(models.Review, id=id)
     form = forms.ReviewForm(instance=review)
     if request.user == review.user:
@@ -245,6 +408,19 @@ def edit_review(request, id):
 
 @login_required(login_url='login')
 def delete_review(request, id):
+    """
+    Display an instance of :model:`models.Review` to delete.
+
+    **Context**
+
+    ``review``
+        An instance of :model:`models.Review` to delete.
+
+    **Template:**
+
+    :template:`app/delete_review.html`
+
+    """
     review = get_object_or_404(models.Review, id=id)
     if request.user == review.user:
         if request.method == 'POST':
