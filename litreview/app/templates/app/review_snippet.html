@@ -4,7 +4,7 @@
             {% if post.review.user == user_logged_in %}
                 <p>Vous avez publié une critique</p>
             {% else %}
-                <p>{{ post.review.ticket.user }} a publié une critique</p>
+                <p>{{ post.review.user }} a publié une critique</p>
             {% endif %}
             <p class="card-text"><small class="text-muted">{{ post.review.time_created }}</small></p>
             <h5 class="card-title">{{ post.review.headline }} -
