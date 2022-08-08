@@ -41,6 +41,11 @@ $ cd ../path/to/the/file
 $ python manage.py runserver
 ```
 5. Open the link written in your terminal or copy/paste it in your browser: http://127.0.0.1:8000/
+6. Enter the following login details:
+
+    **username:** celiatois
+
+    **password:** litreview
 
 
 ## How to use the web app
