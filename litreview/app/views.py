@@ -1,6 +1,5 @@
 from django.shortcuts import render, redirect, get_object_or_404
 from django.db.models import Value, CharField
-from django.contrib.auth import get_user_model
 from django.contrib.auth.decorators import login_required
 from django.core.exceptions import ObjectDoesNotExist
 from itertools import chain
@@ -11,12 +10,14 @@ from django.contrib.auth.models import User
 @login_required(login_url='login')
 def flux(request):
     """
-    Display the :model:`models.Ticket` and :model:`models.Review` posted by the user logged in and the users followed by the user logged in.
+    Display the :model:`models.Ticket` and :model:`models.Review` posted by
+    the user logged in and the users followed by the user logged in.
 
     **Context**
 
     ``posts``
-        List of dicts: :model:`myapp.Ticket` and has_review (bool) / :model:`models.Review` and rating (dict).
+        List of dicts: :model:`myapp.Ticket` and has_review (bool) /
+        :model:`models.Review` and rating (dict).
     ``user_logged_in``
         An instance of :model:`User`
 
@@ -56,7 +57,8 @@ def check_if_ticket_has_review(posts, post):
     """
     Create a dict containing the :model:`myapp.Ticket` and has_review (bool).
     :arg: posts: List of :model:`myapp.Ticket`.
-    :arg: post: Integer indicating the location of the post in the list of posts.
+    :arg: post: Integer indicating the location of the post in the list of
+    posts.
     """
     ticket_in_review = models.Review.objects.filter(ticket=posts[post])
     if len(ticket_in_review) == 1:
@@ -71,7 +73,8 @@ def handle_rating_stars(posts, post):
     """
     Create a dict containing the :model:`myapp.Review` and rating (dict).
     :arg: posts: List of :model:`myapp.Ticket`.
-    :arg: post: Integer indicating the location of the post in the list of posts.
+    :arg: post: Integer indicating the location of the post in the list
+    of posts.
     """
     rating = posts[post].rating
     full_stars = [star for star in range(rating)]
@@ -84,12 +87,14 @@ def handle_rating_stars(posts, post):
 @login_required(login_url='login')
 def display_posts(request):
     """
-    Display the :model:`models.Ticket` and :model:`models.Review` posted by the user logged in.
+    Display the :model:`models.Ticket` and :model:`models.Review` posted by
+    the user logged in.
 
     **Context**
 
     ``posts``
-        List of dicts: :model:`myapp.Ticket` / :model:`models.Review` and rating (dict).
+        List of dicts: :model:`myapp.Ticket` / :model:`models.Review` and
+        rating (dict).
     ``user_logged_in``
         An instance of User.
 
@@ -124,7 +129,8 @@ def display_posts(request):
 @login_required(login_url='login')
 def follow_users(request):
     """
-    Display the list of :model:`User` followed by the user logged in and the users following the user logged in.
+    Display the list of :model:`User` followed by the user logged in
+    and the users following the user logged in.
 
     **Context**
 
@@ -285,7 +291,8 @@ def delete_ticket(request, id):
 @login_required(login_url='login')
 def create_review(request, id):
     """
-    Display an instance of :model:`models.Ticket` and a form to create an instance of :model:`models.Review`.
+    Display an instance of :model:`models.Ticket` and a form to create an
+    instance of :model:`models.Review`.
 
     **Context**
 
@@ -327,7 +334,8 @@ def create_review(request, id):
 @login_required(login_url='login')
 def create_review_without_ticket(request):
     """
-    Display a form to create an instance of:model:`models.Ticket` and :model:`models.Review`.
+    Display a form to create an instance of:model:`models.Ticket`
+    and :model:`models.Review`.
 
     **Context**
 
