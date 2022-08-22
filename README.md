@@ -13,7 +13,7 @@ $ cd ../path/to/the/file
 ```
 4. Create the **virtual environment**:
 ```
-python -m venv env
+python3 -m venv env
 ```
 5. Activate the **virtual environment**:
    - on macOS and Linux:
