@@ -5,7 +5,7 @@ The LITReview web application allows logged in users to ask, read and write revi
 1. Open the Terminal
 2. Clone the repository:
 ```
-$ git clone https://github.com/CeliaTois/CeliaTOIS_9_02052022.git
+$ git clone https://github.com/celia-tois/books-articles-reviews-webapp.git
 ```
 3. Go to the project folder:
 ```
